@@ -3,10 +3,7 @@ import java.io.FileNotFoundException
 import kotlin.time.TimedValue
 import kotlin.time.measureTimedValue
 
-abstract class DayList<T1, T2>(day: Int, private val resPart1: T1, private val resPart2: T2) {
-	private val dayStr = day.toString().padStart(2, '0')
-	private val srcPath = "./src/day${dayStr}/"
-
+abstract class DayList<T1, T2>(private val resPart1: T1, private val resPart2: T2) {
 	abstract fun part1(lines: List<String>): T1
 	abstract fun part2(lines: List<String>): T2
 
@@ -25,6 +22,8 @@ abstract class DayList<T1, T2>(day: Int, private val resPart1: T1, private val r
 	}
 
 	fun run() {
+		val srcPath = "./src/${this.javaClass.`package`.name}/"
+
 		val ft1 = File(srcPath + "test.txt").takeIf { it.exists() } ?: throw FileNotFoundException()
 		doPart1(ft1).let { (res, _) ->
 			println("Test Part 1 = $res")

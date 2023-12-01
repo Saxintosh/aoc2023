@@ -16,7 +16,7 @@ fun main() {
  */
 
 
-private object TheDay2 : DayList<Int, Int>(1, 142, 281) {
+private object TheDay2 : DayList<Int, Int>(142, 281) {
 
 	val rList = listOf("[1-9]", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
 	val regex = rList.joinToString("|").toRegex()
