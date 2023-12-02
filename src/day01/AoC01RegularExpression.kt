@@ -7,22 +7,26 @@ fun main() {
 	TheDay2.run()
 }
 
-/**
- * To find the last match, I can search them all and then get the last one but... it doesn't work
- * because the match list doesn't contemplate the overlapped text: in "seveneightwo" it only finds
- * seven & eight but not two (with the overlapping t)
- *
- * One idea is to reverse the strings and matches and then search for the first match...
- */
 
+/**
+ * To find the last match, I can search all the matches and get the last one but... it
+ * doesn't work because the list of matches doesn't include the overlapping text:
+ * in "seveneightwo" it only finds seven and eight but not two (with the overlapping t).
+ *
+ * You have to use a look ahead expression (?=(one|two|...)) which however returns a list
+ * of matchGroups where each matchGroup is a couple of matches where the first is always
+ * the empty string....
+ *
+ * This code is slower than the other one.
+ */
 
 private object TheDay2 : DayList<Int, Int>(142, 281) {
 
 	val rList = listOf("[1-9]", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
-	val regex = rList.joinToString("|").toRegex()
+	val rListStr = rList.joinToString("|")
 
-	val rListReversed = listOf("[1-9]") + listOf("one", "two", "three", "four", "five", "six", "seven", "eight", "nine").map { it.reversed() }
-	val reversedRegex = rListReversed.joinToString("|").toRegex()
+	// with lookahead
+	val regex = "(?=($rListStr))".toRegex()
 
 
 	override fun part1(lines: List<String>): Int = lines.sumOf { line ->
@@ -30,25 +34,20 @@ private object TheDay2 : DayList<Int, Int>(142, 281) {
 		(digits.first().toString() + digits.last()).toInt()
 	}
 
-	fun findFirst(line: String): String {
-		val v = regex.find(line)?.value!!
+	fun parse(mr: MatchGroup?): Int {
+		val v = mr!!.value
 		return if (v.length == 1)
-			v
+			v.toInt()
 		else
-			"${rList.indexOf(v)}"
-	}
-
-	fun findLast(line: String): String {
-		val v = reversedRegex.find(line.reversed())?.value!!
-		return if (v.length == 1)
-			v
-		else
-			"${rListReversed.indexOf(v)}"
+			rList.indexOf(v)
 	}
 
 	override fun part2(lines: List<String>): Int = lines.sumOf { line ->
-		val digits = findFirst(line) + findLast(line)
-		digits.toInt()
+		val m = regex.findAll(line).toList().map { it.groups.last() }
+		val first = parse(m.first())
+		val last = parse(m.last())
+
+		first * 10 + last
 	}
 
 }
