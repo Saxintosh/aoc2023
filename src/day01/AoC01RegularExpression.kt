@@ -4,7 +4,7 @@ import DayList
 
 
 fun main() {
-	TheDay2.run()
+	TheDayRE.run()
 }
 
 
@@ -20,7 +20,7 @@ fun main() {
  * This code is slower than the other one.
  */
 
-private object TheDay2 : DayList<Int, Int>(142, 281) {
+private object TheDayRE : DayList<Int, Int>(142, 281) {
 
 	val rList = listOf("[1-9]", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
 	val rListStr = rList.joinToString("|")
