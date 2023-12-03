@@ -9,7 +9,7 @@ fun main() {
 	TheDay.run()
 }
 
-private object TheDay : DayList<Int, Long>(4361, 467835L) {
+private object TheDay : DayList<Int, Int>(4361, 467835, 520135, 72514855) {
 
 	val regex = "(\\d+)".toRegex()
 
@@ -45,35 +45,29 @@ private object TheDay : DayList<Int, Long>(4361, 467835L) {
 			.sum()
 	}
 
-	fun ChGrid.findGears() = buildList {
-		forEachCh { p, ch ->
-			if (ch == '*') add(p)
-		}
-	}
-
 	fun ChGrid.findNumAt(p: Point): HRange? {
 		val line = getLine(p.y) ?: return null
 		val range = regex.findAll(line).toList().map { it.range }.firstOrNull { it.contains(p.x) } ?: return null
 		return HRange(p.y, range)
 	}
 
-	override fun part2(lines: List<String>): Long {
+	override fun part2(lines: List<String>): Int {
 		val chGrid = ChGrid(lines)
-		val gears = chGrid.findGears()
-		var sum = 0L
-		gears.forEach { gear ->
-			val s = buildSet {
-				gear.adjacent().forEach { p ->
-					val n = chGrid.findNumAt(p)
-					if (n != null)
-						add(n)
+
+		return chGrid.asPointsSequence()
+			.filter { chGrid[it] == '*' }
+			.map { gear ->
+				buildSet {
+					gear.adjacent().forEach { p ->
+						chGrid.findNumAt(p)?.let { add(it) }
+					}
 				}
 			}
-			if (s.size == 2) {
-				val (n1, n2) = s.toList()
-				sum += chGrid.extract(n1).toLong() * chGrid.extract(n2).toLong()
+			.filter { it.size == 2 }
+			.map {
+				val (n1, n2) = it.toList()
+				chGrid.extract(n1).toInt() * chGrid.extract(n2).toInt()
 			}
-		}
-		return sum
+			.sum()
 	}
 }

@@ -20,7 +20,7 @@ fun main() {
  * This code is slower than the other one.
  */
 
-private object TheDayRE : DayList<Int, Int>(142, 281) {
+private object TheDayRE : DayList<Int, Int>(142, 281, 54304, 54418) {
 
 	val rList = listOf("[1-9]", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
 	val rListStr = rList.joinToString("|")

@@ -22,8 +22,6 @@ data class Point(val x: Int, val y: Int) {
 
 data class HRange(val y: Int, val range: IntRange)
 
-data class VRange(val x: Int, val range: IntRange)
-
 class ChGrid(val lines: List<String>) {
 	val xRange = lines[0].indices
 	val yRange = lines.indices
@@ -35,14 +33,13 @@ class ChGrid(val lines: List<String>) {
 	operator fun get(p: Point) = get(p.x, p.y)
 	operator fun get(p: Pair<Int, Int>) = get(p.first, p.second)
 
-	fun forEachCh(block: (Point, Char) -> Unit) {
+	fun extract(r: HRange) = lines[r.y].substring(r.range)
+
+	fun asPointsSequence() = sequence {
 		yRange.forEach { y ->
 			xRange.forEach { x ->
-				val p = Point(x, y)
-				block(p, lines[y][x])
+				yield(Point(x, y))
 			}
 		}
 	}
-
-	fun extract(r: HRange) = lines[r.y].substring(r.range)
 }

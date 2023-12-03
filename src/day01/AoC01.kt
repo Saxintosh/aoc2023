@@ -7,7 +7,7 @@ fun main() {
 	TheDay.run()
 }
 
-private object TheDay : DayList<Int, Int>( 142, 281) {
+private object TheDay : DayList<Int, Int>( 142, 281, 54304, 54418) {
 
 	val words = listOf("one", "two", "three", "four", "five", "six", "seven", "eight", "nine") + (1..9).map { "$it" }
 

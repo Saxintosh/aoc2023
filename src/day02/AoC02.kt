@@ -7,7 +7,7 @@ fun main() {
 	TheDay.run()
 }
 
-private object TheDay : DayList<Int, Long>(8, 2286L) {
+private object TheDay : DayList<Int, Long>(8, 2286L, 2164, 69929L) {
 	val limits = mapOf(
 		"red" to 12,
 		"green" to 13,
