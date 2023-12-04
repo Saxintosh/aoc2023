@@ -38,6 +38,7 @@ private object TheDay : DayList<Int, Int>(4361, 467835, 520135, 72514855) {
 
 	override fun part1(lines: List<String>): Int {
 		val chGrid = ChGrid(lines)
+		
 		return chGrid.yRange.asSequence()
 			.flatMap { y -> chGrid.findRangeNumbers(y) }
 			.filter { hr -> getPerimeter(hr).any { chGrid.isSymbol(it) } }
