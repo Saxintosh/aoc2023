@@ -6,77 +6,65 @@ fun main() {
 	TheDay.run()
 }
 
-private object TheDay : DayList<Long, Long>(35L, 46L, 227653707L) {
-	class MyRange(val srcRange: LongRange, val dts: Long)
-
-	var seeds = listOf<Long>()
-	var tList: MutableList<MutableList<MyRange>> = mutableListOf()
-
-	var seeds2 = listOf<LongRange>()
-
-	fun List<MyRange>.cvt(x: Long): Long {
-		val r = firstOrNull { x in it.srcRange }
-		return if (r == null) x else x - r.srcRange.first + r.dts
+private object TheDay : DayList<Long, Long>(35L, 46L, 227653707L, 78775051L) {
+	class MyRange(val dst: Long, val src: Long, val len: Long) {
+		val rSrc = (src until src + len)
+		val rDst = (dst until dst + len)
+		val delta get() = dst - src
+		operator fun contains(x: Long) = x in rSrc
+		override fun toString() = "$src->$dst($len)"
+		fun cvt(x: Long) = x + delta
 	}
 
-	fun collectSeeds(lines: List<String>) {
-		seeds = lines[0].substringAfter(": ").split(" ").map(String::toLong)
-	}
+	fun List<MyRange>.cvt(x: Long) = firstOrNull { x in it }?.cvt(x) ?: x
 
-	fun collectMaps(lines: List<String>) {
-		tList = mutableListOf()
-		var currentList = mutableListOf<MyRange>()
-		(2..lines.indices.last).forEach {
-			val parts = lines[it].split(" ")
+	fun collectSeeds(lines: List<String>) = lines[0]
+		.substringAfter(": ")
+		.split(" ")
+		.map(String::toLong)
+
+
+	fun collectBlocks(lines: List<String>) = lines
+		.drop(3)
+		.fold(mutableListOf(mutableListOf<MyRange>())) { acc, line ->
+			val parts = line.split(" ")
 			when (parts.size) {
-				2 -> {
-					currentList = mutableListOf()
-					tList.add(currentList)
-				}
-
+				1 -> acc.add(mutableListOf())
 				3 -> {
 					val (d, s, l) = parts.map(String::toLong)
-					currentList.add(MyRange((s until s + l), d))
+					acc.last().add(MyRange(d, s, l))
 				}
 			}
+			acc
 		}
-	}
 
-	fun process(lines: List<String>) {
-		collectSeeds(lines)
-		collectMaps(lines)
-	}
-
-	fun collectSeeds2(lines: List<String>) {
-		seeds2 = lines[0].substringAfter(": ")
-			.split(" ")
-			.map(String::toLong)
-			.chunked(2)
-			.map { it[0] until it[0] + it[1] }
-	}
-
-	fun process2(lines: List<String>) {
-		collectSeeds2(lines)
-		collectMaps(lines)
-	}
+	fun collectSeedsRange(lines: List<String>) = lines[0].substringAfter(": ")
+		.split(" ")
+		.map(String::toLong)
+		.chunked(2)
+		.map { it[0] until it[0] + it[1] }
 
 
 	override fun part1(lines: List<String>): Long {
-		process(lines)
+		val seeds = collectSeeds(lines)
+		val blocks = collectBlocks(lines)
 		return seeds.minOf {
-			tList.fold(it) { i, list -> list.cvt(i) }
+			blocks.fold(it) { i, list -> list.cvt(i) }
 		}
 	}
 
 	override fun part2(lines: List<String>): Long {
-		process2(lines)
-		return seeds2
-			.minOf {
-				it.asSequence()
+		val seeds = collectSeedsRange(lines)
+		val blocks = collectBlocks(lines)
+		return seeds.parallelStream()
+			.map { lRange ->
+				lRange.asSequence()
 					.map {
-						tList.fold(it) { i, list -> list.cvt(i) }
+						blocks.fold(it) { i, list -> list.cvt(i) }
 					}
 					.min()
 			}
+			.toList()
+			.min()
 	}
 }
