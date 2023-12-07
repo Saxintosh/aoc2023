@@ -8,12 +8,17 @@ fun main() {
 
 private object TheDay : DayList<Long, Long>(6440L, 5905L, 250347426L, 251224870L) {
 
-	var cards = listOf('A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2')
-	var order = cards.indices.toList().map { 'Z' - it }
-	var zip = cards.zip(order).toMap()
-
 	private class Hand(hand: String, val bid: Long, val withJ: Boolean = false) : Comparable<Hand> {
-		val orderedHand = hand.map { zip[it] }.joinToString("")
+		companion object {
+			var orderMap: Map<Char, Char> = emptyMap()
+			fun setOrder(str: String) {
+				val cardFigure = str.toList()
+				val cardOrder = cardFigure.indices.toList().map { 'Z' - it }
+				orderMap = cardFigure.zip(cardOrder).toMap()
+			}
+		}
+
+		val orderedHand = hand.map { orderMap[it] }.joinToString("")
 		val type = hand.groupingBy { it }.eachCount().toList().sortedByDescending { it.second }
 			.let { pList ->
 				if (!withJ)
@@ -49,6 +54,9 @@ private object TheDay : DayList<Long, Long>(6440L, 5905L, 250347426L, 251224870L
 	}
 
 	override fun part1(lines: List<String>) = lines
+		.also {
+			Hand.setOrder("AKQJT98765432")
+		}
 		.map {
 			val s = it.split(' ')
 			Hand(s[0], s[1].toLong())
@@ -62,9 +70,7 @@ private object TheDay : DayList<Long, Long>(6440L, 5905L, 250347426L, 251224870L
 
 	override fun part2(lines: List<String>) = lines
 		.also {
-			cards = listOf('A', 'K', 'Q', 'T', '9', '8', '7', '6', '5', '4', '3', '2', 'J')
-			order = cards.indices.toList().map { 'Z' - it }
-			zip = cards.zip(order).toMap()
+			Hand.setOrder("AKQT98765432J")
 		}
 		.map {
 			val s = it.split(' ')
