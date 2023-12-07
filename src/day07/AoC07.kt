@@ -6,7 +6,7 @@ fun main() {
 	TheDay.run()
 }
 
-private object TheDay : DayList<Long, Long>(6440L, 5905L, 250347426L) {
+private object TheDay : DayList<Long, Long>(6440L, 5905L, 250347426L, 251224870L) {
 
 	var cards = listOf('A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2')
 	var order = cards.indices.toList().map { 'Z' - it }
