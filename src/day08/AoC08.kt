@@ -14,8 +14,17 @@ private object TheDay : DayList<Int, Long>(2, 6L, 21883, 12833235391111L) {
 
 	fun parse(lines: List<String>) {
 		directions = lines[0]
-		map = lines.drop(2).associate {
+		map = lines.asSequence().drop(2).associate {
 			it.substring(0, 3) to (it.substring(7, 10) to it.substring(12, 15))
+		}
+	}
+
+	fun dirGenerator() = sequence {
+		var currentIndex = 0
+		val len = directions.length
+		while (true) {
+			yield(directions[currentIndex])
+			currentIndex = (currentIndex + 1) % len
 		}
 	}
 
@@ -29,42 +38,38 @@ private object TheDay : DayList<Int, Long>(2, 6L, 21883, 12833235391111L) {
 
 	override fun part1(lines: List<String>): Int {
 		parse(lines)
-		var current = "AAA"
-		var count = 0
-		while (true) {
-			directions.forEach { direction ->
-				count++
-				current = current.next(direction)
-				if (current == "ZZZ")
-					return count
+		dirGenerator().foldIndexed("AAA") { idx, current, dir ->
+			current.next(dir).also {
+				if (it == "ZZZ")
+					return idx + 1
 			}
 		}
+		return -1
 	}
 
 	class Ghost(val name: String) {
 		var zLoopCount = 0L
 
 		fun findZs() {
-			var current = name
-			var count = 0L
-			while (true) {
-				directions.forEach { dir ->
-					count++
-					current = current.next(dir)
-					if (current.endsWith("Z")) {
-						zLoopCount = count
+			dirGenerator().fold(name) { current, dir ->
+				zLoopCount++
+				current.next(dir).also {
+					if (it.endsWith("Z"))
 						return
-					}
 				}
 			}
 		}
+
+		init {
+			findZs()
+		}
 	}
+
 
 	override fun part2(lines: List<String>): Long {
 		parse(lines)
 		val ghosts = map.keys.filter { it.endsWith("A") }
 			.map { Ghost(it) }
-			.onEach { it.findZs() }
 		return findLCM(ghosts.map { it.zLoopCount })
 	}
 }
