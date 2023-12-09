@@ -10,7 +10,7 @@ private object TheDay : DayList<Int, Int>(114, 2, 1898776583) {
 
 	tailrec fun List<Int>.findNext(nextAcc: Int = 0): Int {
 		val next = nextAcc + last()
-		val l = this.windowed(2, 1, false) { (a, b) -> b - a }
+		val l = zipWithNext { a, b -> b - a }
 		return if (l.all { it == 0 }) next else l.findNext(next)
 	}
 
@@ -27,4 +27,3 @@ private object TheDay : DayList<Int, Int>(114, 2, 1898776583) {
 			it.findNext()
 		}
 }
-
