@@ -42,4 +42,6 @@ class ChGrid(val lines: List<String>) {
 			}
 		}
 	}
+
+	fun isInRange(p: Point) = p.x in xRange && p.y in yRange
 }

@@ -15,8 +15,8 @@ fun readInput(name: String) = Path("src/$name.txt").readLines()
  * Converts string to md5 hash.
  */
 fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteArray()))
-    .toString(16)
-    .padStart(32, '0')
+	.toString(16)
+	.padStart(32, '0')
 
 /**
  * The cleaner shorthand for printing output.
@@ -24,28 +24,33 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
 fun Any?.println() = println(this)
 
 fun myRange(a: Int, b: Int) = when (a < b) {
-    true -> a..b
-    else -> b..a
+	true -> a..b
+	else -> b..a
+}
+
+fun myRangeUntil(a: Int, b: Int) = when (a < b) {
+	true -> a until b
+	else -> b until a
 }
 
 tailrec fun gcd(a: Long, b: Long): Long {
-    return if (b == 0L) a else gcd(b, a % b)
+	return if (b == 0L) a else gcd(b, a % b)
 }
 
 fun lcm(a: Long, b: Long): Long {
-    return if (a == 0L || b == 0L) 0L else abs(a * b) / gcd(a, b)
+	return if (a == 0L || b == 0L) 0L else abs(a * b) / gcd(a, b)
 }
 
 fun findLCM(numbers: List<Long>): Long {
-    if (numbers.isEmpty()) {
-        throw IllegalArgumentException("List cannot be empty")
-    }
+	if (numbers.isEmpty()) {
+		throw IllegalArgumentException("List cannot be empty")
+	}
 
-    var result = numbers[0]
+	var result = numbers[0]
 
-    for (i in 1 until numbers.size) {
-        result = lcm(result, numbers[i])
-    }
+	for (i in 1 until numbers.size) {
+		result = lcm(result, numbers[i])
+	}
 
-    return result
+	return result
 }
