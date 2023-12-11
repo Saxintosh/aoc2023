@@ -85,17 +85,12 @@ private object TheDay : DayList<Int, Int>(8, 10, 7086, 317) {
 
 		val loop = findLoop(s, next, grid)
 
-		var tiles = 0
+		// https://en.wikipedia.org/wiki/Point_in_polygon
+		// Throwing a 45-degree beam to simplify cases of state change.
+		// Specifically, when a ray encounters an angle, 7 or L, the inside/outside state does not change.
 
+		val startList = grid.xRange.map { Point(it, 0) } + grid.yRange.map { Point(0, it) } - Point(0, 0)
 
-		grid.xRange.forEach {
-			tiles += grid.castRay(Point(it, 0), loop)
-		}
-
-		(1..grid.yRange.last).forEach {
-			tiles += grid.castRay(Point(0, it), loop)
-		}
-
-		return tiles
+		return startList.sumOf { grid.castRay(it, loop) }
 	}
 }
