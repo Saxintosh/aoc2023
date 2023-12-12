@@ -2,6 +2,7 @@
 
 import java.math.BigInteger
 import java.security.MessageDigest
+import java.util.HashMap
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
 import kotlin.math.abs
@@ -53,4 +54,8 @@ fun findLCM(numbers: List<Long>): Long {
 	}
 
 	return result
+}
+
+class Memoization<K, V>(val block: (K) -> V) : HashMap<K, V>() {
+	fun getOrCompute(key: K) = getOrPut(key) { block(key) }
 }
