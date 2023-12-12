@@ -1,21 +1,26 @@
 package day12
 
 import DayList
+import java.util.HashMap
 
 fun main() {
 	TheDay.run()
 }
 
-private object TheDay : DayList<Int, Int>(21, 525152, 7792) {
+private object TheDay : DayList<Long, Long>(21, 525152, 7792) {
 
-	fun parse(lines: List<String>) = lines.map { line ->
-		val (springs, numList) = line.split(" ")
-		val blocks = numList.split(',').map { it.toInt() }
-		springs to blocks
-	}
+	var cache = HashMap<Pair<String, List<Int>>, Long>() // add a cache for the first branch!!!
+
+	fun parse(lines: List<String>) = lines
+		.map { line ->
+			val (springs, numList) = line.split(" ")
+			val blocks = numList.split(',').map { it.toInt() }
+			springs to blocks
+		}
+		.also { cache.clear() }
 
 	// with the help of HyperNeutrino (https://www.youtube.com/watch?v=g3Ms5e7Jdqo)
-	fun countArrangements(springs: String, blocks: List<Int>): Int {
+	fun countArrangements(springs: String, blocks: List<Int>): Long {
 		// simple checks:
 		if (springs.isEmpty())
 			return if (blocks.isEmpty()) 1 else 0 // empty string is only valid if no other block are expected
@@ -23,12 +28,14 @@ private object TheDay : DayList<Int, Int>(21, 525152, 7792) {
 		if (blocks.isEmpty())
 			return if ('#' in springs) 0 else 1 // if no other block are expected, is valid if no other '#' are present
 
-		var result = 0 // now I start with no valid arrangements
+		var result = 0L // now I start with no valid arrangements
 
 		// we have 2 cases to check!
 		// first branch, if '.' or if "? as a dot": I remove a spring and proceed to check a block of '#' with the same control
-		if (springs[0] in ".?")
-			result += countArrangements(springs.drop(1), blocks)
+		if (springs[0] in ".?") {
+			val nextSprings = springs.drop(1)
+			result += cache.getOrPut(nextSprings to blocks) { countArrangements(nextSprings, blocks) }
+		}
 
 		// second branch, if '#' or if "? as a hash"
 		if (springs[0] in "#?") {
@@ -44,8 +51,8 @@ private object TheDay : DayList<Int, Int>(21, 525152, 7792) {
 			) {
 				// so we can start a valid block
 				val nextSprings = springs.drop(blockLen + 1) // take out the block and a '.' after the block
-				val nextControl = blocks.drop(1)
-				result += countArrangements(nextSprings, nextControl)
+				val nextBlocks = blocks.drop(1)
+				result += countArrangements(nextSprings, nextBlocks)
 			}
 		}
 		return result
