@@ -24,41 +24,46 @@ private object TheDay : DayList<Long, Long>(21, 525152, 7792, 13012052341533) {
 
 	// with the help of HyperNeutrino (https://www.youtube.com/watch?v=g3Ms5e7Jdqo)
 	fun countPossibleArrangements(springs: String, blockList: List<Int>): Long {
-		// simple checks:
+		// simple exit strategy:
+
+		// if I evaluated all the springs:
+		//    if the list of blocks are empty, I found 1 solution
 		if (springs.isEmpty())
 			return if (blockList.isEmpty()) 1 else 0 // empty string is only valid if no other block are expected
 
+		// if the list of blocks is empty:
+		//    the solutions is a valide one if there isn't any other block(s) '#'
 		if (blockList.isEmpty())
 			return if ('#' in springs) 0 else 1 // if no other block are expected, is valid if no other '#' are present
 
 		var result = 0L // now I start with no valid arrangements
 
-		val spring = springs.first()
+		val firstSpring = springs.first()
 		val blockLen = blockList.first()
 
 		// we have 2 cases to check!
-		// first branch: spring is '.' or '?' is considered as a '.':
-		if (spring in ".?") {
+
+		// First branch: firstSpring is '.' or ('?' considered as a '.'). I can take it out and iterate again:
+		if (firstSpring in ".?") {
 			// I remove the spring and proceed recursively with same blockList (and a cache)
-			val nextSprings = springs.drop(1)
+			val remainingSprings = springs.drop(1)
 //			result += countPossibleArrangements(nextSprings, blockList)
-//			result += cache.getOrPut(nextSprings to blockList) { countPossibleArrangements(nextSprings, blockList) }
-			result += cache.getOrCompute(nextSprings to blockList)
+			result += cache.getOrCompute(remainingSprings to blockList)
 		}
 
-		// second branch, if '#' or if "? as a hash"
-		if (spring in "#?") {
-			// this mark a start of a block and I have to check if is valid. Three condition:
+		// Second branch: firstSpring if '#' or ('?' considered as a '#'). I can take out a block followed by a separator '.'... and iterate again
+		if (firstSpring in "#?") {
+			// this mark a start of a block and (this is an optimization) I have to pre-check if it can be valid. Three condition:
 			if (
-				springs.length >= blockLen && // 1: there must be enough springs left
-				springs.take(blockLen).none { it == '.' } && // 2: must be possible to have a continues block of '#' or '?'
+				springs.length >= blockLen && // 1: there must be enough springs left to build a block
+				springs.take(blockLen).none { it == '.' } && // 2: there must be possible to build a block of blockLen ('#' or '?')
 				(springs.getOrElse(blockLen) { '.' } != '#') // 3: no other adjacent block: the next character (if present) cannot be a '#'
 			) {
-				// so we can drop a block of '#'
-				val nextSprings = springs.drop(blockLen + 1) // take out the block plus a '.' after the block
-				val nextBlocks = blockList.drop(1)
+				// pre-check satisfied: so we can drop a block of '#' (or '?' as '#')
+				val remainingSprings = springs.drop(blockLen + 1) // take out the block plus a '.' after the block
+				val remainingBlocks = blockList.drop(1)
 //				result += countPossibleArrangements(nextSprings, nextBlocks)
-				result += cache.getOrCompute(nextSprings to nextBlocks)
+				result += cache.getOrCompute(remainingSprings to remainingBlocks)
 			}
 		}
 		return result
