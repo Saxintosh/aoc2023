@@ -22,18 +22,21 @@ data class Point(val x: Int, val y: Int) {
 
 data class HRange(val y: Int, val range: IntRange)
 
-class ChGrid(val lines: List<String>) {
+class ChGrid(src: List<String>) {
+	val lines = src.map { it.toCharArray() }
 	val xRange = lines[0].indices
 	val yRange = lines.indices
 
-	fun getLine(y: Int) = lines.getOrNull(y)
-	fun String.getCh(x: Int) = getOrNull(x)
+	fun getLine(y: Int) = lines[y].joinToString("")
 
-	operator fun get(x: Int, y: Int) = getLine(y)?.getCh(x)
+	operator fun get(x: Int, y: Int) = lines.getOrNull(y)?.getOrNull(x)
 	operator fun get(p: Point) = get(p.x, p.y)
 	operator fun get(p: Pair<Int, Int>) = get(p.first, p.second)
 
-	fun extract(r: HRange) = lines[r.y].substring(r.range)
+	operator fun set(x: Int, y: Int, ch: Char) = lines[y].set(x, ch)
+	operator fun set(p: Point, ch: Char) = set(p.x, p.y, ch)
+
+	fun extract(r: HRange) = getLine(r.y).substring(r.range)
 
 	fun asPointsSequence() = sequence {
 		yRange.forEach { y ->

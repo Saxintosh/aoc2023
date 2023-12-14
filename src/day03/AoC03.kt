@@ -13,7 +13,7 @@ private object TheDay : DayList<Int, Int>(4361, 467835, 520135, 72514855) {
 
 	val regex = "(\\d+)".toRegex()
 
-	fun ChGrid.findRangeNumbers(y: Int) = regex.findAll(lines[y]).map { HRange(y, it.range) }.toList()
+	fun ChGrid.findRangeNumbers(y: Int) = regex.findAll(getLine(y)).map { HRange(y, it.range) }.toList()
 
 	fun getPerimeter(hr: HRange) = buildList {
 		hr.range.forEach {
@@ -47,7 +47,7 @@ private object TheDay : DayList<Int, Int>(4361, 467835, 520135, 72514855) {
 	}
 
 	fun ChGrid.findNumAt(p: Point): HRange? {
-		val line = getLine(p.y) ?: return null
+		val line = getLine(p.y)
 		val range = regex.findAll(line).toList().map { it.range }.firstOrNull { it.contains(p.x) } ?: return null
 		return HRange(p.y, range)
 	}
