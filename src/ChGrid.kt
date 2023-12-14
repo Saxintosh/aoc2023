@@ -47,4 +47,6 @@ class ChGrid(src: List<String>) {
 	}
 
 	fun isInRange(p: Point) = p.x in xRange && p.y in yRange
+
+	fun deepHashCode() = lines.fold(1) {acc,array -> (31*acc) + array.contentHashCode()}
 }

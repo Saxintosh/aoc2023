@@ -66,21 +66,23 @@ private object TheDay : DayList<Int, Int>(136, 64, 108641, 84328) {
 		tiltEst()
 	}
 
-	fun ChGrid.tiltCycle(iteration: Int) {
+	fun ChGrid.tiltCycle(requestedCycles: Int) {
 		val cache = HashMap<Int, Int>()
-		var cycles = 0
+		var cyclesPerformed = 0
 		var hash = 0
-		while (cycles < iteration) {
-			cycles++
+		// find first repetition
+		while (cyclesPerformed < requestedCycles) {
+			cyclesPerformed++
 			tiltCycle()
-			hash = lines.joinToString { it.joinToString("") }.hashCode()
+//			hash = lines.joinToString { it.joinToString("") }.hashCode()
+			hash = deepHashCode()
 			if (hash in cache)
 				break
-			cache[hash] = cycles
+			cache[hash] = cyclesPerformed
 		}
-		val exIteration = cache[hash]!!
-		val cycleLen = cycles - exIteration
-		val rem = (iteration-cycles)%cycleLen
+		val startOfRepetition = cache[hash]!!
+		val lengthOfRepetition = cyclesPerformed - startOfRepetition
+		val rem = (requestedCycles - cyclesPerformed) % lengthOfRepetition
 		repeat(rem) {
 			tiltCycle()
 		}
