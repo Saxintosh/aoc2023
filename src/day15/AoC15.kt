@@ -20,8 +20,9 @@ private object TheDay : DayList<Int, Int>(1320, 145) {
 
 	override fun part2(lines: List<String>): Int {
 		val boxes = Array(256) { Box() }
+
 		lines[0]
-			.split(",")
+			.splitToSequence(",")
 			.forEach {
 				val (label, type) = it.split("-", "=")
 				val box = boxes[label.theHash()]
@@ -32,7 +33,9 @@ private object TheDay : DayList<Int, Int>(1320, 145) {
 			}
 
 		return boxes.mapIndexed { boxIndex, box ->
-			box.map.values.mapIndexed { slotIndex, value -> (boxIndex + 1) * (slotIndex + 1) * value }.sum()
+			box.map.values
+				.mapIndexed { slotIndex, value -> (boxIndex + 1) * (slotIndex + 1) * value }
+				.sum()
 		}.sum()
 	}
 }
