@@ -9,7 +9,7 @@ fun main() {
 	TheDay.run()
 }
 
-private object TheDay : DayList<Int, Int>(46, 1, 8323) {
+private object TheDay : DayList<Int, Int>(46, 51, 8323, 8491) {
 
 	enum class Dir { Up, Down, Left, Right }
 	data class MovingBeam(val point: Point, val dir: Dir) {
@@ -23,7 +23,7 @@ private object TheDay : DayList<Int, Int>(46, 1, 8323) {
 
 	lateinit var grid: ChGrid
 	val beams = ArrayDeque<MovingBeam>()
-	lateinit var heatMap: Array<Array<Int>>
+	lateinit var heatMap: Array<Array<Boolean>>
 	val visitedMB = mutableSetOf<MovingBeam>()
 
 	fun parse(lines: List<String>) {
@@ -34,11 +34,11 @@ private object TheDay : DayList<Int, Int>(46, 1, 8323) {
 	fun reset() {
 		beams.clear()
 		visitedMB.clear()
-		heatMap = Array(grid.yRange.last + 1) { Array(grid.xRange.last + 1) { 0 } }
+		heatMap = Array(grid.yRange.last + 1) { Array(grid.xRange.last + 1) { false } }
 	}
 
 	fun markHeat(p: Point) {
-		heatMap[p.y][p.x]++
+		heatMap[p.y][p.x] = true
 	}
 
 	fun processCell(p: Point, dir: Dir) {
@@ -79,7 +79,6 @@ private object TheDay : DayList<Int, Int>(46, 1, 8323) {
 	}
 
 	fun startBeam(mb: MovingBeam): Int {
-
 		reset()
 		beams.add(mb)
 
@@ -95,11 +94,7 @@ private object TheDay : DayList<Int, Int>(46, 1, 8323) {
 			}
 		}
 
-		return heatMap.sumOf { row ->
-			row.sumOf {
-				if (it > 0) 1 else 0 as Int // Compiler bug!!!
-			}
-		}
+		return heatMap.sumOf { row -> row.count { it } }
 	}
 
 	override fun part1(lines: List<String>): Int {
@@ -108,6 +103,7 @@ private object TheDay : DayList<Int, Int>(46, 1, 8323) {
 	}
 
 	override fun part2(lines: List<String>): Int {
+		parse(lines)
 		return buildList {
 			grid.yRange.forEach { y ->
 				add(MovingBeam(Point(-1,y), Right))
@@ -118,6 +114,7 @@ private object TheDay : DayList<Int, Int>(46, 1, 8323) {
 				add(MovingBeam(Point(x, grid.yRange.last+1), Up))
 			}
 		}.maxOf {
+			reset()
 			startBeam(it)
 		}
 	}
