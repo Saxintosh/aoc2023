@@ -9,6 +9,8 @@ abstract class DayList<T1, T2>(
 	private val resultPart1: T1? = null,
 	private val resultPart2: T2? = null
 ) {
+	private val srcPath = "./src/${this.javaClass.`package`.name.replace('.', '/')}/"
+
 	abstract fun part1(lines: List<String>): T1
 	abstract fun part2(lines: List<String>): T2
 
@@ -26,9 +28,38 @@ abstract class DayList<T1, T2>(
 		}
 	}
 
-	fun run() {
-		val srcPath = "./src/${this.javaClass.`package`.name}/"
+	fun part1Lines(block: (List<String>) -> T1) {
+		var f = File(srcPath + "test.txt")
+			.takeIf { it.exists() } ?: throw FileNotFoundException()
+		var lines = f.readLines()
+		var res = measureTimedValue { block(lines) }
+		println("Test Part 1 = ${res.value}")
+		check(res.value == testPart1)
 
+		f = File(srcPath + "input.txt").takeIf { it.exists() } ?: throw FileNotFoundException()
+		lines = f.readLines()
+		res = measureTimedValue { block(lines) }
+		println("     Part 1 = ${res.value} in ${res.duration}")
+		resultPart1?.let { check(it == res.value) }
+	}
+
+	fun part2Lines(block: (List<String>) -> T2) {
+		var f = File(srcPath + "test2.txt")
+			.takeIf { it.exists() } ?: File(srcPath + "test.txt")
+			.takeIf { it.exists() } ?: throw FileNotFoundException()
+		var lines = f.readLines()
+		var res = measureTimedValue { block(lines) }
+		println("Test Part 2 = ${res.value}")
+		check(res.value == testPart2)
+
+		f = File(srcPath + "input.txt").takeIf { it.exists() } ?: throw FileNotFoundException()
+		lines = f.readLines()
+		res = measureTimedValue { block(lines) }
+		println("     Part 2 = ${res.value} in ${res.duration}")
+		resultPart2?.let { check(it == res.value) }
+	}
+
+	fun run() {
 		val ft1 = File(srcPath + "test.txt").takeIf { it.exists() } ?: throw FileNotFoundException()
 		doPart1(ft1).let { (res, _) ->
 			println("Test Part 1 = $res")
