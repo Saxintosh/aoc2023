@@ -7,7 +7,7 @@ fun main() {
 	AOC
 }
 
-private object AOC : Day<Int, Int>(102, 1, 1023) {
+private object AOC : Day<Int, Int>(102, 94, 1023) {
 
 	var grid = emptyList<List<Int>>()
 	var rRange = 0..0
@@ -93,8 +93,43 @@ private object AOC : Day<Int, Int>(102, 1, 1023) {
 			s.hl
 		}
 
-		part2Lines {
-			1
+		part2Lines { lines ->
+			lines.parse()
+
+			var s = Status(0, 0, 0, 0, 0, 0)
+			pq.add(s)
+
+			while (pq.isNotEmpty()) {
+				s = pq.remove()
+
+				// if we reach the destination:
+				if (s.isAtTheDestination && s.n >= 4)
+					break
+
+				val node = s.node()
+				if (node in seen)
+					continue
+
+				seen.add(node)
+
+				// keep directions
+				if (s.n < 10 && !s.isStandingStill) {
+					val ns = s.goStraight()
+					if (ns.inRange)
+						pq.add(ns)
+				}
+
+				// try other directions ( all - current - reversed)
+				if (s.n >= 4 || s.isStandingStill)
+					for (dir in (allDirections - (s.dr to s.dc) - (-s.dr to -s.dc))) {
+						val ns = s.turnTo(dir)
+						if (ns.inRange)
+							pq.add(ns)
+
+					}
+			}
+
+			s.hl
 		}
 	}
 }
