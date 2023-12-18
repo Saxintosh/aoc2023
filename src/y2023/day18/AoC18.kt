@@ -8,7 +8,7 @@ fun main() {
 	AOC
 }
 
-private object AOC : Day<Long, Long>(62, 952408144115, 56923) {
+private object AOC : Day<Long, Long>(62, 952408144115, 56923, 66296566363189) {
 
 	val points = mutableListOf<LPoint>()
 
