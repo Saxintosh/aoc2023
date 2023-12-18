@@ -20,6 +20,28 @@ data class Point(val x: Int, val y: Int) {
 	}
 }
 
+data class LPoint(val x: Long, val y: Long) {
+	fun up() = LPoint(x, y - 1)
+	fun down() = LPoint(x, y + 1)
+	fun left() = LPoint(x - 1, y)
+	fun upLeft() = LPoint(x - 1, y - 1)
+	fun downLeft() = LPoint(x - 1, y + 1)
+	fun right() = LPoint(x + 1, y)
+	fun upRight() = LPoint(x + 1, y - 1)
+	fun downRight() = LPoint(x + 1, y + 1)
+
+	fun adjacent() = buildList {
+		add(up())
+		add(down())
+		add(left())
+		add(right())
+		add(upLeft())
+		add(upRight())
+		add(downLeft())
+		add(downRight())
+	}
+}
+
 data class HRange(val y: Int, val range: IntRange)
 
 class ChGrid(src: List<String>) {

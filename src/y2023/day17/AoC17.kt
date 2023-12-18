@@ -7,7 +7,7 @@ fun main() {
 	AOC
 }
 
-private object AOC : Day<Int, Int>(102, 94, 1023) {
+private object AOC : Day<Int, Int>(102, 94, 1023, 1165) {
 
 	var grid = emptyList<List<Int>>()
 	var rRange = 0..0
