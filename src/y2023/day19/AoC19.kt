@@ -6,10 +6,9 @@ fun main() {
 	AOC
 }
 
-
 private typealias CatRange = Map<Char, IntRange>
 
-private object AOC : Day<Int, Long>(19114, 167409079868000, 456651) {
+private object AOC : Day<Int, Long>(19114, 167409079868000, 456651, 131899818301477) {
 
 	val CatRange.combinations get() = this.values.fold(1L) { acc, r -> acc * (r.last - r.first + 1) }
 
