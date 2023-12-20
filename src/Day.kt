@@ -33,26 +33,29 @@ open class Day<T1, T2>(
 	private val testResults = listOf(testRes1, testRes2)
 	private val properResults = listOf(realRes1, realRes2)
 
-	private fun <SRC, T> part(part: Int, reader: File.() -> SRC, block: (SRC) -> T) {
-		var lines = fTests[part].reader()
-		var res = measureTimedValue { block(lines) }
-		println("Test Part ${part + 1} = ${res.value}")
-		check(res.value == testResults[part])
-
-		lines = fInput.reader()
-		res = measureTimedValue { block(lines) }
-		println("     Part ${part + 1} = ${res.value} in ${res.duration}")
-		properResults[part]?.let { check(it == res.value) }
+	private fun <SRC, T> part(part: Int, skipTest: Boolean, reader: File.() -> SRC, block: (SRC) -> T) {
+		if (!skipTest) {
+			val lines = fTests[part].reader()
+			val res = measureTimedValue { block(lines) }
+			println("Test Part ${part + 1} = ${res.value}")
+			check(res.value == testResults[part])
+		}
+		val lines2 = fInput.reader()
+		val res2 = measureTimedValue { block(lines2) }
+		println("     Part ${part + 1} = ${res2.value} in ${res2.duration}")
+		properResults[part]?.let { check(it == res2.value) }
 	}
 
 	@AdventOfCode
-	fun part1Lines(block: (List<String>) -> T1) = part(0, File::readLines, block)
-	@AdventOfCode
-	fun part2Lines(block: (List<String>) -> T2) = part(1, File::readLines, block)
+	fun part1Lines(skipTest: Boolean = false, block: (List<String>) -> T1) = part(0, skipTest, File::readLines, block)
 
 	@AdventOfCode
-	fun part1Text(block: (String) -> T1) = part(0, File::readText, block)
+	fun part2Lines(skipTest: Boolean = false, block: (List<String>) -> T2) = part(1, skipTest, File::readLines, block)
+
 	@AdventOfCode
-	fun part2Text(block: (String) -> T2) = part(1, File::readText, block)
+	fun part1Text(skipTest: Boolean = false, block: (String) -> T1) = part(0, skipTest, File::readText, block)
+
+	@AdventOfCode
+	fun part2Text(skipTest: Boolean = false, block: (String) -> T2) = part(1, skipTest, File::readText, block)
 
 }
