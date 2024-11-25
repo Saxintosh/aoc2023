@@ -8,6 +8,10 @@ sourceSets {
     }
 }
 
+dependencies {
+    implementation("com.google.guava:guava:32.1.3-jre")
+}
+
 tasks {
     wrapper {
         gradleVersion = "8.5"
