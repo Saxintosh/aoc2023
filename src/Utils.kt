@@ -59,3 +59,20 @@ fun findLCM(numbers: List<Long>): Long {
 class Memoization<K, V>(val block: (K) -> V) : HashMap<K, V>() {
 	fun getOrCompute(key: K) = getOrPut(key) { block(key) }
 }
+
+fun <T> permutations(list: List<T>): List<List<T>> {
+	if (list.size <= 1) return listOf(list) // Base case: single permutation for one item
+
+	val permutations = mutableListOf<List<T>>()
+	for (i in list.indices) {
+		// Fix the current element
+		val current = list[i]
+		// Get the rest of the elements excluding the current one
+		val remaining = list.take(i) + list.drop(i + 1)
+		// Generate all permutations of the rest and prepend the current element
+		for (perm in permutations(remaining)) {
+			permutations.add(listOf(current) + perm)
+		}
+	}
+	return permutations
+}

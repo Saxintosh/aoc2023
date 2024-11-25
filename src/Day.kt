@@ -1,5 +1,6 @@
 import java.io.File
 import java.io.FileNotFoundException
+import kotlin.system.exitProcess
 import kotlin.time.measureTimedValue
 
 @DslMarker
@@ -9,8 +10,8 @@ annotation class AdventOfCode
 open class Day<T1, T2>(
 	testRes1: T1,
 	testRes2: T2,
-	realRes1: T1? = null,
-	realRes2: T2? = null
+	val realRes1: T1? = null,
+	val realRes2: T2? = null
 ) {
 	private val srcPath: String
 
@@ -22,12 +23,12 @@ open class Day<T1, T2>(
 	}
 
 	private val fInput = File(srcPath + "input.txt")
-		.takeIf { it.exists() } ?: throw FileNotFoundException()
+							 .takeIf { it.exists() } ?: throw FileNotFoundException()
 	private val fTest1 = File(srcPath + "test.txt")
-		.takeIf { it.exists() } ?: throw FileNotFoundException()
+							 .takeIf { it.exists() } ?: throw FileNotFoundException()
 	private var fTest2 = File(srcPath + "test2.txt")
-		.takeIf { it.exists() } ?: File(srcPath + "test.txt")
-		.takeIf { it.exists() } ?: throw FileNotFoundException()
+							 .takeIf { it.exists() } ?: File(srcPath + "test.txt")
+							 .takeIf { it.exists() } ?: throw FileNotFoundException()
 
 	private val fTests = listOf(fTest1, fTest2)
 	private val testResults = listOf(testRes1, testRes2)
@@ -38,12 +39,20 @@ open class Day<T1, T2>(
 			val lines = fTests[part].reader()
 			val res = measureTimedValue { block(lines) }
 			println("Test Part ${part + 1} = ${res.value}")
-			check(res.value == testResults[part])
+			if (res.value != testResults[part]) {
+				println("              ERROR: ${testResults[part]} expected!")
+				exitProcess(1)
+			}
 		}
 		val lines2 = fInput.reader()
 		val res2 = measureTimedValue { block(lines2) }
 		println("     Part ${part + 1} = ${res2.value} in ${res2.duration}")
-		properResults[part]?.let { check(it == res2.value) }
+		properResults[part]?.let {
+			if(it != res2.value) {
+				println("              ERROR: ${it} expected!")
+				exitProcess(1)
+			}
+		}
 	}
 
 	@AdventOfCode
